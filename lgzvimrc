@@ -1,0 +1,239 @@
+set nu
+set nocompatible
+syntax on
+syntax enable
+filetype on
+filetype plugin on
+"set noshowmode
+set t_Co=256
+"set LANG=en_US.utf8
+set incsearch
+set hlsearch
+set noswf
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set autoindent
+set smartindent
+set expandtab
+set completeopt-=preview
+set mouse=a
+let mapleader=","
+set laststatus=2 
+"set statusline=%{fugitive#statusline()} 
+"set statusline+=[%f:%LL] 
+"hi StatusLine ctermfg=White ctermbg=Darkblue
+"hi StatusLineNC ctermfg=White ctermbg=Darkblue
+
+"----------------------------------------------------------------------
+"Settings for airline
+"let g:airline_enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline_theme='light'
+let g:airline_section_x = ''
+let g:airline_section_warning=''
+let g:airline#extensions#quickfix#quickfix_text='Quickfix'
+let g:airline#extensions#quickfix#location_text='Location'
+"let g:airline_detect_modified=1
+"let g:airline_detect_iminsert=1
+"let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#formatter = 'unique_tail'
+"let g:airline_mode_map = {
+"      \ '__' : '-',
+"      \ 'n'  : 'N',
+"      \ 'i'  : 'I',
+"      \ 'R'  : 'R',
+"      \ 'c'  : 'C',
+"      \ 'v'  : 'V',
+"      \ 'V'  : 'V',
+"      \ '' : 'V',
+"      \ 's'  : 'S',
+"      \ 'S'  : 'S',
+"      \ '' : 'S',
+"      \ }
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+"let g:airline_left_sep = '◆'
+"let g:airline_right_sep = '◀'
+"let g:airline_symbols.linenr = '¶'
+"let g:airline_symbols.branch = '⎇'
+"let g:airline_symbols.paste = 'ρ'
+"let g:airline_symbols.paste = 'Þ'
+"let g:airline_symbols.paste = '∥'
+"let g:airline_symbols.whitespace = 'Ξ'
+
+" powerline symbols
+let g:airline_left_sep = ''
+"let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+"let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = '╼┽╼'
+
+"--------------------------------------------------------
+
+"Settings for quickfix
+
+"Settings for supertab
+"let g:SuperTabMappingForward = '<s-tab>'
+"let g:SuperTabMappingBackward = '<tab>'
+
+"Settings for fugitive
+
+"Settings for tagbar
+let g:tagbar_left=1
+"let g:tagbar_vertical=20
+"autocmd VimEnter * nested :call tagbar#autoopen(1)
+
+"Settings for autocomplpop
+"let g:acp_behaviorKeywordLength=1
+"let g:AutoComplPop_MappingDriven=1
+
+"Settings for nerdtree
+let NERDTreeWinPos="left"
+autocmd QuitPre * nested :call QuitWhenThree()
+
+"Settings for pathogen
+execute pathogen#infect()
+
+"Settings for minibufexplorer
+let g:miniBufExplMapWindowNavVim=1 
+let g:miniBufExplMapWindowNavArrows=1 
+let g:miniBufExplMapCTabSwitchBufs=1 
+let g:miniBufExplModSelTarget=1 
+let g:miniBufExplMoreThanOne=0
+
+"clang-complete
+"let g:clang_use_library=1
+"let g:clang_complete_copen=1
+"let g:clang_auto_select=1
+"let g:clang_snippets=1
+"let g:clang_periodic_quickfix=0
+"let g:clang_trailing_placeholder=1
+"let g:clang_close_preview=1
+"let g:clang_library_path='/usr/lib/llvm-3.5/lib/'
+"let g:clang_debug=1
+"let g:clang_user_options='-stdlib=libstdc++ -std=c++11 -I/usr/include -I/usr/lib/llvm-3.5/include -I/usr/local/include/llvm-prof'
+
+"Settings for youcomplete me
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+let g:ycm_collect_identifiers_from_tags_files=1
+let g:ycm_seed_identifiers_with_syntax=1
+let g:ycm_min_num_of_chars_for_completion=2
+"let g:ycm_confirm_extra_conf=0
+
+imap ` <Esc>
+nmap ` <Esc>
+vmap ` <Esc>
+inoremap ( <c-r>=OpenPair('(')<CR>
+inoremap ) <c-r>=ClosePair(')')<CR>
+inoremap { <c-r>=OpenPair('{')<CR>
+inoremap } <c-r>=ClosePair('}')<CR>
+inoremap [ <c-r>=OpenPair('[')<CR>
+inoremap ] <c-r>=ClosePair(']')<CR>
+" just for xml document, but need not for now.
+"inoremap < <c-r>=OpenPair('<')<CR>
+"inoremap > <c-r>=ClosePair('>')<CR>
+
+function! OpenPair(char)
+    let PAIRs = {
+	            \ '{' : '}',
+			    \ '[' : ']',
+			    \ '(' : ')',
+			    \ '<' : '>'
+			    \}
+    if line('$')>2000
+        let line = getline('.')
+																							 
+	    let txt = strpart(line, col('.')-1)
+	else
+	    let lines = getline(1,line('$'))
+		let line=""
+		for str in lines
+		    let line = line . str . "\n"
+		endfor
+		  
+		let blines = getline(line('.')-1, line("$"))
+	    let txt = strpart(getline("."), col('.')-1)
+	    for str in blines
+		    let txt = txt . str . "\n"
+	    endfor
+     endif
+	 let oL = len(split(line, a:char, 1))-1
+     let cL = len(split(line, PAIRs[a:char], 1))-1
+   
+     let ol = len(split(txt, a:char, 1))-1
+     let cl = len(split(txt, PAIRs[a:char], 1))-1
+	
+	 if oL>=cL || (oL<cL && ol>=cl)
+		 return a:char . PAIRs[a:char] . "\<Left>"
+	 else
+		 return a:char
+	 endif
+endfunction
+function! ClosePair(char)
+	if getline('.')[col('.')-1] == a:char
+		return "\<Right>"
+	else
+		return a:char
+	endif
+endf
+ 
+"inoremap ' <c-r>=CompleteQuote("'")<CR>
+"inoremap 
+" <c-r>=CompleteQuote('"')<CR>
+function! CompleteQuote(quote)
+	let ql = len(split(getline('.'), a:quote, 1))-1
+	let slen = len(split(strpart(getline("."), 0, col(".")-1), a:quote, 1))-1
+	let elen = len(split(strpart(getline("."), col(".")-1), a:quote, 1))-1
+	let isBefreQuote = getline('.')[col('.') - 1] == a:quote
+
+	if '"'==a:quote && "vim"==&ft && 0==match(strpart(getline('.'), 0, col('.')-1), "^[\t ]*$")
+		" for vim comment.
+		return a:quote
+	elseif "'"==a:quote && 0==match(getline('.')[col('.')-2], "[a-zA-Z0-9]")
+		" for Name's Blog.
+		return a:quote
+    elseif (ql%2)==1
+     	" a:quote length is odd.
+	    return a:quote
+	elseif ((slen%2)==1 && (elen%2)==1 && !isBefreQuote) || ((slen%2)==0 && (elen%2)==0)
+	    return a:quote . a:quote . "\<Left>"
+	elseif isBefreQuote
+	    return "\<Right>"
+	else
+	    return a:quote . a:quote . "\<Left>"
+	endif
+endfunction
+
+function! ToggleNERDTreeAndTagbar()
+    let w:jumpbacktohere = 1
+        
+    NERDTree
+    TagbarOpen
+    wincmd K
+    res 20
+    
+    " Jump back to the original window
+    for window in range(1, winnr('$'))
+        execute window . 'wincmd w'
+        if exists('w:jumpbacktohere')
+            unlet w:jumpbacktohere
+            break
+        endif
+    endfor
+    wincmd L
+    vertical res 125
+endfunction
+let mapleader = ","
+nnoremap <leader>, :call ToggleNERDTreeAndTagbar()<CR>
+
+function! QuitWhenThree()
+    if winnr('$')==3
+        NERDTreeClose
+    endif
+endfunction
